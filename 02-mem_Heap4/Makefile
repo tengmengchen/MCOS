@@ -1,0 +1,49 @@
+include ../common.mk
+
+SRCS_ASM = \
+	Start.S \
+	mem.S \
+
+SRCS_C = \
+	kernel.c \
+	usart.c \
+	page.c \
+	printf.c
+
+OBJS = $(SRCS_ASM:.S=.o)
+OBJS += $(SRCS_C:.c=.o)
+
+.DEFAULT_GOAL := all
+all: os.elf
+os.elf: ${OBJS}
+	${CC} ${CFLAGS} -T os.ld -o os.elf $^
+	${OBJCOPY} -O binary os.elf os.bin
+
+%.o : %.c
+	${CC} ${CFLAGS} -c -o $@ $<
+
+%.o : %.S
+	${CC} ${CFLAGS} -c -o $@ $<
+
+.PHONY : flash
+flash: all
+	@echo "------------------------"
+	@echo "Flashing os.bin to board"
+	@echo "------------------------"
+	@${OPENOCD} -f ${CFG}  -c init -c halt  -c "program os.bin"  -c exit
+
+.PHONY : debug
+debug: all
+	@echo "-----------------------------------------------"
+	@echo "Please manually kill the openocd after gbd quit"
+	@echo "-----------------------------------------------"
+	@${OPENOCD} -f ${CFG} &
+	@${GDB} os.elf -q -x ../gdbinit
+
+.PHONY : code
+code: all
+	@${OBJDUMP} -S os.elf | less
+
+.PHONY : clean
+clean:
+	rm -rf *.o *.bin *.elf
