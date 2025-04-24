@@ -1,7 +1,7 @@
 # 手搓操作系统实践：从零构建属于自己的系统世界
 在探索计算机底层奥秘的道路上，我怀揣着对操作系统原理的浓厚兴趣，以及深入理解计算机系统底层运行机制的渴望，踏上了手搓操作系统的奇妙征程。在钻研 **FreeRTOS** 与 **RT-Thread** 的经典设计理念与核心代码架构后，我以它们为灵感源泉，结合自己对实时操作系统的理解，历经无数次调试与优化，终于打造出一款简单而精巧的操作系统—— **MCOS** 。
 
-<div style="display: flex; justify-content: center;">
+<div align=center>
     <img src="pic/MCOS.png" alt="image" width="300" height="200">
 </div>
 
