@@ -44,7 +44,7 @@ void USART1_init()
     x = ((GPIOA_REG_R(CFGHR) & ~(0b1111<<4)) | (uint32_t)(0b1011<<4));
     GPIOA_REG_W(CFGHR,x);
 
-    x = (USART1_REG_R(BRR) | (uint16_t)0b1000101);
+    x = (USART1_REG_R(BRR) | (uint16_t)0b1000011);
     USART1_REG_W(BRR,(uint16_t)x);
 
     x = (USART1_REG_R(CTLR1) | 0X0000200C);
