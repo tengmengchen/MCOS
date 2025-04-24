@@ -101,7 +101,7 @@ trap_handler_base:
     .balign 4
     j   pfic_systick_handler /*12 : Machine timer interrupt*/
 	.balign 4
-    j   pfic_systick_handler /*13 : Reserved*/
+    j   irq_default_handler /*13 : Reserved*/
 	.balign 4
     j   pfic_software_handler /*14 : Machine software interrupt*/
 
