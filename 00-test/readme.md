@@ -5,4 +5,6 @@
 <div align=center>
     <img src="../pic/CH32V307地址空间.PNG" alt="image" width="300" height="200">
 </div>
+<div align=center>
 <img src="../pic/启动模式.png" alt="image" width="300" height="200">
+</div>
