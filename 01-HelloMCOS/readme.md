@@ -11,7 +11,7 @@
 </div>
 
 ### 2、波特率的配置
-&emsp;&emsp;波特率计算公式如下，根据`FCLK=8MHz`，收发器波特率设定为`115200`，可以反推出来`USARTDIV$\approx$4.3`。因此整数部分填入`0x100`，小数部分填入`0x0011`。
+&emsp;&emsp;波特率计算公式如下，根据`FCLK=8MHz`，收发器波特率设定为`115200`，可以反推出来`USARTDIV≈4.3`。因此整数部分填入`0x100`，小数部分填入`0x0011`。
 <div align=center>
     <img src="../pic/波特率计算公式.png" alt="image">
 </div>
