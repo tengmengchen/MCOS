@@ -20,7 +20,7 @@ void start_kernel()
     while(1)
     {
         s = (char *)MC_PageMalloc(20);
-        printf("%x", s);
+        printf("%x\r\n", s);
         MC_PageFree(s);
     }
 }
