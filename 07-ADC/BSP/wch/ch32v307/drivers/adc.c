@@ -8,7 +8,20 @@
 
 uint8_t MC_adc_init(MC_adc *adc_addr, ADC_InitTypeDef adc_initType)
 {
-    uint32_t ctlr2 = adc_addr->CTLR2, tmp = 0;
+    uint32_t ctlr2, tmp = 0;
+
+    //首先开启adc1_2时钟
+    tmp = RCC_REG_R(APB2PCENR);
+    tmp |= (1<<9) | (1<<10);
+    RCC_REG_W(APB2PCENR, tmp);
+
+    // 如果ADC在断电状态，将其唤醒
+    if(!(adc_addr->CTLR2 & ADC_ADON_MASK))
+    {
+        adc_addr->CTLR2 |= 1;
+        delay_ms(1);
+    }
+    ctlr2 = adc_addr->CTLR2;
     
     //配置连续采样
     if(adc_initType.ADC_ContinuousConvMode)
@@ -29,38 +42,17 @@ uint8_t MC_adc_init(MC_adc *adc_addr, ADC_InitTypeDef adc_initType)
     {
         ctlr2 &= ADC_DATA_ALIGN_RIGHT;
     }
-    
-    // 设置校准
-    // ctlr2 |= ADC_CAL_ON;
-    // ctlr2 |= ADC_RSTCAL_ON;
 
     adc_addr->CTLR2 = ctlr2;
-    delay_ms(1);
-    // //等待ADC初始化完成
-    // tmp = 0;
-    // while(tmp < 16 && ((adc_addr->CTLR2 | ADC_CAL_MASK) || (adc_addr->CTLR2 | ADC_RSTCAL_MASK)))
-    // {
-    //     tmp++;
-    // }
-    // if(tmp >= 16)
-    // {
-    //     return 1;
-    // }
 
     //配置采集通道1 （PA1）的数据
-    adc_addr->RSQR3 = 1;
+    adc_addr->RSQR3 = 0x00000001;
     
     return 0;
 }
 
 uint8_t MC_adc_start(MC_adc *adc_addr)
 {
-    uint32_t tmp;
-    //开启adc1_2时钟
-    tmp = RCC_REG_R(APB2PCENR);
-    tmp |= (1<<9) | (1<<10);
-    RCC_REG_W(APB2PCENR, tmp);
-
     adc_addr->CTLR2 |= ADC_ADON;
     return 0;
 }

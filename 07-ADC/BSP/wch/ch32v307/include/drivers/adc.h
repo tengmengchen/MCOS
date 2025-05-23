@@ -18,6 +18,7 @@
 #define ADC_CONT_MODE_ENABLE  0x00000002
 #define ADC_CONT_MODE_DISABLE 0xFFFFFFFD
 
+#define ADC_ADON_MASK         0x00000001
 #define ADC_ADON              0x00000001
 #define ADC_ADOFF             0xFFFFFFFE
 
