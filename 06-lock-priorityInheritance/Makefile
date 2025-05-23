@@ -32,7 +32,7 @@ debug: all
 	@echo "Please manually kill the openocd after gbd quit"
 	@echo "-----------------------------------------------"
 	@${OPENOCD} -f ${CFG} &
-	@${GDB} os.elf -q -x ../gdbinit -x watch_mscratch.gdb
+	@${GDB} build/os.elf -q -x ../gdbinit
 
 .PHONY : code
 code: all

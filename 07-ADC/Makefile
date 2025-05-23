@@ -1,7 +1,13 @@
 include ../common.mk
 
-SRCS_C := $(wildcard *.c)
-SRCS_S := $(wildcard *.S)
+# 源码目录列表（主目录 + BSP子目录）
+SRC_DIRS := . ./BSP/wch/ch32v307/drivers
+INCLUDE_DIRS := -I. -I./BSP/wch/ch32v307/include/drivers
+CFLAGS += $(INCLUDE_DIRS)
+
+SRCS_C := $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.c))
+SRCS_S := $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.S))
+# $(info SRCS_C = $(SRCS_C))
 
 OBJS = $(SRCS_S:.S=.o)
 OBJS += $(SRCS_C:.c=.o)
