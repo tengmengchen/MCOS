@@ -25,8 +25,14 @@ void USART1_init()
     x = ((GPIOA_REG_R(CFGHR) & ~(0b1111<<4)) | (uint32_t)(0b1011<<4));
     GPIOA_REG_W(CFGHR,x);
 
+#ifdef SYSCLK_72MHz
+    x = (USART1_REG_R(BRR) | (uint16_t)0b1001110001); // DIV_M = 39  DIV_F = 1
+#endif
+#ifdef SYSCLK_8MHz
     x = (USART1_REG_R(BRR) | (uint16_t)0b1000101);
+#endif 
     USART1_REG_W(BRR,(uint16_t)x);
+
 
     x = (USART1_REG_R(CTLR1) | 0X0000200C);
     USART1_REG_W(CTLR1,(uint32_t)x);

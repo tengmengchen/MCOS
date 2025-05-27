@@ -2,7 +2,7 @@ include ../common.mk
 
 # 源码目录列表（主目录 + BSP子目录）
 SRC_DIRS := . ./BSP/wch/ch32v307/drivers
-INCLUDE_DIRS := -I. -I./BSP/wch/ch32v307/include/drivers
+INCLUDE_DIRS := -I. -I./BSP/wch/ch32v307/include/drivers -I./BSP/wch/ch32v307/include
 CFLAGS += $(INCLUDE_DIRS)
 
 SRCS_C := $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.c))
@@ -11,6 +11,9 @@ SRCS_S := $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.S))
 
 OBJS = $(SRCS_S:.S=.o)
 OBJS += $(SRCS_C:.c=.o)
+# OBJS = $(patsubst ./%, build/%, $(SRCS_C:.c=.o))
+# OBJS += $(patsubst ./%, build/%, $(SRCS_S:.S=.o))
+# $(info OBJS = $(OBJS))
 
 .DEFAULT_GOAL := all
 all: os.elf

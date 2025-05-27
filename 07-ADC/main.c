@@ -1,22 +1,44 @@
 #include "os.h"
 #include "adc.h"
+#include "dma.h"
 
 MC_thread_t thread1;
 MC_thread_t thread2;
 MC_thread_t thread3;
 
 MC_spinlock_t lock;
+
+uint16_t ADC1_Data[1005];
 void thread1_entry()
 {
     uint8_t ret;
     printf("test_thread1_start!\r\n");
-    MC_adc_t adc_p = ADC1_BASE;
+
+    DMA_InitTypedef dma_initTypedef = {
+        .MSIZE = 1,
+        .PSIZE = 1,
+        .MINC  = 1,
+        .PINC  = 0,
+        .CIRC  = 1,
+        .DIR   = 0,
+        .DMA_X = 1,
+        .DMA_Channel = DMA1_CHANNEL_ADC1,
+        .CNTR  = 1000,
+        .PADDR = (uint32_t *)0x4001244C, // ADC1规则数据寄存器地址
+        .MADDR = ADC1_Data
+    }; 
+    MC_dma_init(dma_initTypedef);
+
+    MC_adc_t adc_p = (MC_adc *)ADC1_BASE;
     ADC_InitTypeDef adc_initType = {
         .ADC_ContinuousConvMode = 1,
         .ADC_DataAlign = 0,
+        .ADC_DMA = 1
     };
     MC_adc_init(adc_p, adc_initType);
     MC_adc_start(adc_p);
+
+    MC_dma_start(dma_initTypedef);
 
     uint32_t raw_data;
     uint16_t data;
@@ -27,6 +49,11 @@ void thread1_entry()
         data = raw_data & 0x0000FFFF;
         result = raw_data;
         printf("read ADC: %d\r\n", result);
+        for(int i = 1; i <= 10; i++)
+        {
+            printf("%d ", ADC1_Data[i]);
+        }
+        printf("\r\n");
         MC_delay(500);
     }   
 }

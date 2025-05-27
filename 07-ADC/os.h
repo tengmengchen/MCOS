@@ -3,6 +3,7 @@
 #include "platform.h"
 #include "types.h"
 #include "riscv.h"
+#include "config.h"
 // #include <stdarg.h>
 // #include <stddef.h>
 // #include <stdio.h>
@@ -136,7 +137,7 @@ struct MC_sched{
     MC_thread_t running_thread;
 }MC_sched;
 
-void MC_schedule();
+void MC_schedule(); // 不应调用此函数
 void MC_scheduler_begin();
 void MC_scheduler_start();
 void MC_scheduler_stop();
@@ -224,5 +225,11 @@ uint8_t MC_spinlock_release(MC_spinlock_t spinlock);
 /*----------delay---------*/
 void delay_ms(uint32_t nms);
 void MC_delay(uint32_t nms);
+/*-------------------------*/
+
+
+
+/*----------BOARD----------*/
+void Board_init();
 /*-------------------------*/
 #endif

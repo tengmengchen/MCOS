@@ -3,7 +3,8 @@
 
 #include "os.h"
 
-
+#define ADC1_BASE  0x40012400
+#define ADC2_BASE  0x40012800
 
 //CTLR2
 #define ADC_DATA_ALIGN_LEFT   0x00000800
@@ -15,12 +16,16 @@
 #define ADC_CAL_ON            0x00000008
 #define ADC_CAL_MASK          0x00000008
 
+#define ADC_DMA_ENABLE        0x00000100
+#define ADC_DMA_DISABLE       0xFFFFFE00
+
 #define ADC_CONT_MODE_ENABLE  0x00000002
 #define ADC_CONT_MODE_DISABLE 0xFFFFFFFD
 
 #define ADC_ADON_MASK         0x00000001
 #define ADC_ADON              0x00000001
 #define ADC_ADOFF             0xFFFFFFFE
+
 
 
 
@@ -63,6 +68,7 @@ typedef struct
   // uint32_t  ADC_OutputBuffer;             /* Specifies whether the ADC channel output buffer is enabled or disabled.
   //                                              This parameter can be a value of @ref ADC_OutputBuffer */
   uint32_t ADC_Pga;                       /* 指定PGA增益倍数 */
+  uint8_t ADC_DMA;                        /*DMA使能*/
 }ADC_InitTypeDef;
 
 

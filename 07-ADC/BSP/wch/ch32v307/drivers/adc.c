@@ -10,9 +10,10 @@ uint8_t MC_adc_init(MC_adc *adc_addr, ADC_InitTypeDef adc_initType)
 {
     uint32_t ctlr2, tmp = 0;
 
-    //首先开启adc1_2时钟
+    //首先开启adc1时钟
     tmp = RCC_REG_R(APB2PCENR);
-    tmp |= (1<<9) | (1<<10);
+    tmp = (tmp & ADC1EN_MASK) | ADC1EN_ON;
+    // tmp |= (1<<9) | (1<<10);
     RCC_REG_W(APB2PCENR, tmp);
 
     // 如果ADC在断电状态，将其唤醒
@@ -41,6 +42,16 @@ uint8_t MC_adc_init(MC_adc *adc_addr, ADC_InitTypeDef adc_initType)
     else
     {
         ctlr2 &= ADC_DATA_ALIGN_RIGHT;
+    }
+
+    //使能DMA
+    if(adc_initType.ADC_DMA)
+    {
+        ctlr2 |= ADC_DMA_ENABLE;
+    }
+    else
+    {
+        ctlr2 &= ADC_DMA_DISABLE;
     }
 
     adc_addr->CTLR2 = ctlr2;

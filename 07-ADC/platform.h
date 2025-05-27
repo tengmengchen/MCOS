@@ -1,15 +1,33 @@
 #ifndef __PLATFORM_H__
 #define __PLATFORM_H__
 
-#include "types.h"
+#include "riscv.h"
+#include "config.h"
 
-#define SYSCLK 8000000
+#ifdef SYSCLK_8MHz
+#define SYSCLK  8000000
+#endif
+#ifdef SYSCLK_72MHz
+#define SYSCLK  72000000
+#endif
+#ifndef SYSCLK
+// 系统时钟默认8MHz
+#define SYSCLK  8000000 
+#endif
+
+/*----------SYS CLK----------*/
+#ifndef TARGET_BOARD 
+#define TARGET_BOARD ch32v307
+#endif
+/*---------------------------*/
+
+
 
 /*----------USART1----------*/
 typedef enum{
     STATR = 0,
     DATAR = 1,
-    BRR = 2,
+    BRR   = 2,
     CTLR1 = 3,
 } _USART1_REG;
 
@@ -20,9 +38,59 @@ typedef enum{
 
 /*----------RCC----------*/
 typedef enum{
-    CTLR = 0,
-    APB2PCENR=6,
+    CTLR      = 0,
+    APB2PCENR = 6,
 }_RCC_REG;
+
+// CTLR
+#define PLLON_ENABLE       0x01000000
+#define PLLON_DISABLE      0xFEFFFFFF
+
+// CFGR0
+#define SW_SYSCLK_MASK     0xFFFFFFFC
+#define SW_SYSCLK_HSI      0x00000000
+#define SW_SYSCLK_HSE      0x00000001
+#define SW_SYSCLK_PLL      0x00000002
+
+#define HPRE_SYSCLK_MASK   0xFFFFFF0F
+#define HPRE_SYSCLK_NODIV  0x00000000
+#define HPRE_SYSCLK_DIV2   0x00000080
+#define HPRE_SYSCLK_DIV4   0x00000090
+
+#define PPRE2_HCLK_MASK    0xFFFF38FF
+#define PPRE2_HCLK_NODIV   0x00000000
+#define PPRE2_HCLK_DIV2    0x00002000
+#define PPRE2_HCLK_DIV4    0x00002800
+
+#define ADCPRE_PCLK2_MASK  0xFFFF3FFF
+#define ADCPRE_PCLK2_DIV2  0x00000000
+#define ADCPRE_PCLK2_DIV4  0x00004000
+#define ADCPRE_PCLK2_DIV6  0x00008000
+#define ADCPRE_PCLK2_DIV8  0x0000C000
+
+#define PLLMUL_MASK        0xFFC3FFFF
+#define PLLMUL_18x         0x00000000
+
+// APB2PRENR
+#define ADC1EN_MASK        0xFFFFFDFF
+#define ADC1EN_ON          0x00000200
+#define ADC1EN_OFF         0x00000000
+
+typedef struct {
+    __IO uint32_t CTLR;
+    __IO uint32_t CFGR0;
+    __IO uint32_t INTR;
+    __IO uint32_t APB2PRSTR;
+    __IO uint32_t APB1PRSTR;
+    __IO uint32_t AHBPCENR;
+    __IO uint32_t ABP2PCENR;
+    __IO uint32_t ABP1PCERN;
+    __IO uint32_t BDCTLR;
+    __IO uint32_t RSTSCKR;
+    __IO uint32_t AHBRSTR;
+    __IO uint32_t CFGR2;
+
+}RCC_InitTypedef;
 
 #define RCC_BASE 0x40021000
 /*-----------------------*/
@@ -42,16 +110,9 @@ typedef enum{
 
 
 
-/*----------ADC----------*/
-#define ADC1_BASE  0x40012400
-#define ADC2_BASE  0x40012800
-/*-----------------------*/
-
-
-
 /*----------RTK----------*/
-#define RTK_TIMEBASE_FREQ 8000
-#define RTK_BASE 0xE000F000
+#define RTK_TIMEBASE_FREQ ((SYSCLK)/1000) // 1ms
+#define RTK_BASE          0xE000F000
 struct RTK_Controller{
     uint32_t CTRL;
     uint32_t SR;
