@@ -8,14 +8,14 @@ MC_thread_t thread3;
 
 MC_spinlock_t lock;
 
-uint16_t ADC1_Data[1005] = {1};
+uint16_t ADC1_Data[10005] = {1};
 
 void DMA1_CH1_HT_Handler();
 
 void thread1_entry()
 {
     uint8_t ret;
-    printf("test_thread1_start!\r\n");
+    // printf("test_thread1_start!\r\n");
 
     DMA_InitTypedef uart_dma_initTypedef = {
         .MSIZE = 1,
@@ -26,14 +26,13 @@ void thread1_entry()
         .DIR   = 1,
         .DMA_X = 1,
         .DMA_Channel = DMA1_CHANNEL_USART1_TX,
-        .TCIE  = 1,
-        .CNTR  = 500,
+        .CNTR  = 5000,
         .PADDR = (uint32_t *)0x40013804, // USART1数据寄存器
         .MADDR = ADC1_Data
     }; 
     MC_dma_init(uart_dma_initTypedef);
     USART1_Enable_DMAT();
-    MC_dma_start(uart_dma_initTypedef);
+    // MC_dma_start(uart_dma_initTypedef);
 
     DMA_InitTypedef dma_initTypedef = {
         .MSIZE = 1,
@@ -44,8 +43,9 @@ void thread1_entry()
         .DIR   = 0,
         .DMA_X = 1,
         .HTIE  = 1,
+        .TCIE  = 1,
         .DMA_Channel = DMA1_CHANNEL_ADC1,
-        .CNTR  = 1000,
+        .CNTR  = 10000,
         .PADDR = (uint32_t *)0x4001244C, // ADC1规则数据寄存器地址
         .MADDR = ADC1_Data
     }; 
@@ -67,15 +67,15 @@ void thread1_entry()
     uint16_t result;
     while(1)
     {
-        raw_data = MC_adc_readdata(adc_p);
-        data = raw_data & 0x0000FFFF;
-        result = raw_data;
-        printf("read ADC: %d\r\n", result);
-        for(int i = 1; i <= 10; i++)
-        {
-            printf("%d ", ADC1_Data[i]);
-        }
-        printf("\r\n");
+        // raw_data = MC_adc_readdata(adc_p);
+        // data = raw_data & 0x0000FFFF;
+        // result = raw_data;
+        // printf("read ADC: %d\r\n", result);
+        // for(int i = 1; i <= 10; i++)
+        // {
+        //     printf("%d ", ADC1_Data[i]);
+        // }
+        // printf("\r\n");
         MC_delay(500);
     }   
 }
@@ -103,7 +103,7 @@ int main()
         if(tmp != tick)
         {
             tick = tmp;
-            printf("main: tick:%d\r\n", tick);
+            // printf("main: tick:%d\r\n", tick);
         }
     }
     return 0;
@@ -111,15 +111,22 @@ int main()
 
 void DMA1_CH1_HT_Handler()
 {
-    static uint16_t *MADDR = ADC1_Data, flag = 0;
-    // MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_MADDR, &MADDR);
+    static uint16_t *MADDR = ADC1_Data, cntr = 5000;
+
+    MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_CNTR, &cntr);
+    MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_MADDR, &MADDR);
     MC_dma_start_by_channel(1, 4);
-    // flag = (flag + 1) % 2;
-    // MADDR = ADC1_Data;
-    // if(flag)
-    // {
-    //     MADDR += 500;
-    // }
+    return;
+}
+
+void DMA1_CH1_TC_Handler()
+{
+    static uint16_t *MADDR = ADC1_Data + 5000, cntr = 5000;
+
+    MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_CNTR, &cntr);
+    MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_MADDR, &MADDR);
+    MC_dma_start_by_channel(1, 4);
+    return;
 }
 
 void DMA1_CH4_HT_Handler()
@@ -128,7 +135,7 @@ void DMA1_CH4_HT_Handler()
     // uart_dma_initTypedef.MADDR = MADDR;
     // MC_dma_init(uart_dma_initTypedef);
     // MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_MADDR, &MADDR);
-    MC_dma_start_by_channel(1, 4);
+    // MC_dma_start_by_channel(1, 4);
     // flag = (flag + 1) % 2;
     // MADDR = ADC1_Data;
     // if(flag)
@@ -139,7 +146,15 @@ void DMA1_CH4_HT_Handler()
 
 void DMA1_CH4_TC_Handler()
 {
-    static uint16_t *MADDR = ADC1_Data, flag = 0, cntr = 500;
+    static uint16_t *MADDR, flag = 0, cntr = 5000;
+
+    MADDR = ADC1_Data;
+    flag = (flag + 1) % 2;
+    if(flag)
+    {
+        MADDR += 500;
+    }
+
     MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_CNTR, &cntr);
     MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_MADDR, &MADDR);
     MC_dma_start_by_channel(1, 4);

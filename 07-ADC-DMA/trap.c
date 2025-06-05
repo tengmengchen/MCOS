@@ -74,6 +74,11 @@ void MC_dma1ch1_handler()
     // 清除全局中断标志
     *tmp_intfcr |= (1 << 0);
     
+    // 如果未使能循环传输则禁用DMA
+    if(!(tmp_cfgr & DMA_CFGR_CIRC_ENABLE))
+    {
+        dma_channel->CFGR &= DMA_CFGR_EN_MASK;
+    }
 }
 
 void MC_dma1ch4_handler()
@@ -102,4 +107,9 @@ void MC_dma1ch4_handler()
     // 清除全局中断标志
     *tmp_intfcr |= (1 << 12);
     
+    // 如果未使能循环传输则禁用DMA
+    if(!(tmp_cfgr & DMA_CFGR_CIRC_ENABLE))
+    {
+        dma_channel->CFGR &= DMA_CFGR_EN_MASK;
+    }
 }

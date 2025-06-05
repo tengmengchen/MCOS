@@ -53,7 +53,7 @@
 #define DMA_CFGR_TCIE_ON      0x00000002
 #define DMA_CFGR_TCIE_OFF     0x00000000
 
-#define DMA_CFGR_EN_MASk      0xFFFFFFFE
+#define DMA_CFGR_EN_MASK      0xFFFFFFFE
 #define DMA_CFGR_EN_ON        0x00000001
 #define DMA_CFGR_EN_OFF       0x00000000
 

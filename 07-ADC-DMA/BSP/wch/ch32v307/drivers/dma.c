@@ -45,7 +45,7 @@ uint8_t MC_dma_init(DMA_InitTypedef dma_initType)
 
     // 选择DMA通道
     dma_channel = &dma->dma_channel[channel];
-    dma_channel->CFGR &= DMA_CFGR_EN_MASk; // 关闭DMA_X 关闭后才可以配置相关寄存器
+    dma_channel->CFGR &= DMA_CFGR_EN_MASK; // 关闭DMA_X 关闭后才可以配置相关寄存器
         
     tmp = dma_channel->CFGR;
     // 配置是否为存储器到存储器
@@ -221,8 +221,6 @@ void MC_dma_start_by_channel(uint8_t dma_x, uint8_t channel)
     }
     dma_channel = &dma->dma_channel[channel];
 
-    // 单次使能的DMA执行完毕后，貌似EN位不会被清零
-    dma_channel->CFGR &= DMA_CFGR_EN_MASk;
     dma_channel->CFGR |= DMA_CFGR_EN_ON;
 }
 

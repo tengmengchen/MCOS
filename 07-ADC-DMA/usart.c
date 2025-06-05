@@ -26,7 +26,21 @@ void USART1_init()
     GPIOA_REG_W(CFGHR,x);
 
 #ifdef SYSCLK_72MHz
+#ifdef USART1_BAUDRATE_115200
     x = (USART1_REG_R(BRR) | (uint16_t)0b1001110001); // DIV_M = 39  DIV_F = 1
+#endif
+#ifdef USART1_BAUDRATE_500000
+    x = (USART1_REG_R(BRR) | (uint16_t)0b10010000); // DIV_M = 9  DIV_F = 0
+#endif
+#ifdef USART1_BAUDRATE_720000
+    x = (USART1_REG_R(BRR) | (uint16_t)0b1100100); // DIV_M = 6  DIV_F = 4
+#endif
+#ifdef USART1_BAUDRATE_800000
+    x = (USART1_REG_R(BRR) | (uint16_t)0b1011010); // DIV_M = 5  DIV_F = 10
+#endif
+#ifdef USART1_BAUDRATE_900000
+    x = (USART1_REG_R(BRR) | (uint16_t)0b1010000); // DIV_M = 5  DIV_F = 0
+#endif
 #endif
 #ifdef SYSCLK_8MHz
     x = (USART1_REG_R(BRR) | (uint16_t)0b1000101);
@@ -49,7 +63,8 @@ void puts(uint8_t *s)
     {
         
         putc(*s++);
-        while((USART1_REG_R(STATR) & (1<<7)) == 0)continue;
+        while((USART1_REG_R(STATR) & (1 << 7)) == 0)continue; // 等待TXE置位
+        while((USART1_REG_R(STATR) & (1 << 6)) == 0)continue; // 等待TC置位
        
     }
     __ENABLE_INTERRUPT__();
