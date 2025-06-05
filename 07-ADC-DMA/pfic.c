@@ -27,3 +27,13 @@ void MC_pfic_pending_clear(uint8_t irqn)
     unsigned int bit_offset = irqn % 32;
     pfic_iprr->IPRRx[idx] = 1 << bit_offset;
 }
+
+/**
+ * 中断使能函数
+ */
+void MC_pfic_interupt_enable(uint8_t irqn)
+{
+    uint8_t idx = irqn / 32;
+    unsigned int bit_offset = irqn % 32;
+    pfic_ienr->IENRx[idx] = 1 << bit_offset;
+}

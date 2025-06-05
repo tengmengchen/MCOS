@@ -54,4 +54,11 @@ void puts(uint8_t *s)
     }
     __ENABLE_INTERRUPT__();
 }
+
+void USART1_Enable_DMAT()
+{
+    uint32_t x = USART1_REG_R(CTLR3) | (1 << 7);
+    USART1_REG_W(CTLR3, x);
+}
+
 #endif

@@ -1,5 +1,12 @@
 #include "os.h"
+#include "dma.h"
+
 extern void trap_handler_base();
+extern void DMA1_CH1_HT_Handler();
+extern void DMA1_CH1_TC_Handler();
+extern void DMA1_CH4_HT_Handler();
+extern void DMA1_CH4_TC_Handler();
+
 
 void __DISENABLE_INTERRUPT__()
 {
@@ -31,6 +38,7 @@ void MC_mtip_handler()
 extern uint8_t MC_schedule_flag;
 void MC_software_handler()
 {
+    // 上下文切换入口
     if(MC_schedule_flag)
     {
         MC_schedule_flag = 0;
@@ -38,4 +46,60 @@ void MC_software_handler()
     }
 
     MC_pfic_pending_clear(SOFTWARE_IRQ);
+}
+
+void MC_dma1ch1_handler()
+{
+    uint32_t *tmp_intfr, *tmp_intfcr, tmp_cfgr;
+    MC_dma *dma = (MC_dma *)DMA1_BASE;
+    DMA_Channel_InitTypedef *dma_channel = &dma->dma_channel[0];
+    tmp_cfgr = dma_channel->CFGR;
+    tmp_intfr = &dma->INTFR;
+    tmp_intfcr = &dma->INTFCR;
+    if((*tmp_intfr & (1 << 3)) && (tmp_cfgr & DMA_CFGR_TEIE_ON)) // 传输错误
+    {
+        *tmp_intfcr |= (1 << 3);
+    }
+    if((*tmp_intfr & (1 << 2)) && (tmp_cfgr & DMA_CFGR_HTIE_ON)) // 传输过半
+    {
+        *tmp_intfcr |= (1 << 2);
+        DMA1_CH1_HT_Handler();
+    }
+    if((*tmp_intfr & (1 << 1)) && (tmp_cfgr & DMA_CFGR_TCIE_ON)) // 传输完成
+    {
+        *tmp_intfcr |= (1 << 1);
+        DMA1_CH1_TC_Handler();
+    }
+
+    // 清除全局中断标志
+    *tmp_intfcr |= (1 << 0);
+    
+}
+
+void MC_dma1ch4_handler()
+{
+    uint32_t *tmp_intfr, *tmp_intfcr, tmp_cfgr;
+    MC_dma *dma = (MC_dma *)DMA1_BASE;
+    DMA_Channel_InitTypedef *dma_channel = &dma->dma_channel[3];
+    tmp_cfgr = dma_channel->CFGR;
+    tmp_intfr = &dma->INTFR;
+    tmp_intfcr = &dma->INTFCR;
+    if((*tmp_intfr & (1 << 15)) && (tmp_cfgr & DMA_CFGR_TEIE_ON)) // 传输错误
+    {
+        *tmp_intfcr |= (1 << 15);
+    }
+    if((*tmp_intfr & (1 << 14)) && (tmp_cfgr & DMA_CFGR_HTIE_ON)) // 传输过半
+    {
+        *tmp_intfcr |= (1 << 14);
+        DMA1_CH4_HT_Handler();
+    }
+    if((*tmp_intfr & (1 << 13)) && (tmp_cfgr & DMA_CFGR_TCIE_ON)) // 传输完成
+    {
+        *tmp_intfcr |= (1 << 13);
+        DMA1_CH4_TC_Handler();
+    }
+
+    // 清除全局中断标志
+    *tmp_intfcr |= (1 << 12);
+    
 }

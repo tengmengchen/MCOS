@@ -29,6 +29,8 @@ typedef enum{
     DATAR = 1,
     BRR   = 2,
     CTLR1 = 3,
+    CTLR2 = 4,
+    CTLR3 = 5,
 } _USART1_REG;
 
 #define USART1_BASE 0x40013800
@@ -209,6 +211,10 @@ typedef struct PFIC_SCTLR* PFIC_SCTLR_t;
 #define ECALL_M_IRQ  5
 #define SYS_TICK_IRQ 12
 #define SOFTWARE_IRQ 14
+#define DMA1_CH1_IRQ 27
+#define DMA1_CH2_IRQ 28
+#define DMA1_CH3_IRQ 29
+#define DMA1_CH4_IRQ 30
 #define ADC1_2_IRQ   34
 
 

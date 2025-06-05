@@ -165,6 +165,7 @@ extern PFIC_IPRIOR_t pfir_iprior;
 
 void MC_pfic_pending_set(uint8_t irqn);
 void MC_pfic_pending_clear(uint8_t irqn);
+void MC_pfic_interupt_enable(uint8_t irqn);
 /*------------------------*/
 
 

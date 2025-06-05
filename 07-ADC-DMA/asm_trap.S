@@ -104,9 +104,41 @@ trap_handler_base:
     j   irq_default_handler /*13 : Reserved*/
 	.balign 4
     j   pfic_software_handler /*14 : Machine software interrupt*/
+	.balign 4
+    j   irq_default_handler /*15 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*16 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*17 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*18 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*19 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*20 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*21 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*22 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*23 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*24 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*25 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*26 : Reserved*/
+	.balign 4
+	j   pfic_dma1_ch1_handler /*27 : DMA1_CH1 interrupt*/
+	.balign 4
+    j   irq_default_handler /*28 : Reserved*/
+	.balign 4
+    j   irq_default_handler /*29 : Reserved*/
+	.balign 4
+	j 	pfic_dma1_ch4_handler /*30 : DMA1_CH4 interrupt */
 
-	/* 占位代码：跳过 19 个中断入口，每个4字节，共76字节 */
-	.space 76, 0x00
+/* 占位代码：跳过 6 个中断入口，每个4字节，共24字节 */
+	.space 12, 0x00
 
     j   pfic_adc1_2_handler /*34 : ADC1_2 interrupt*/
 
@@ -131,8 +163,27 @@ pfic_software_handler:
 	
 	j return_from_interrupt
 
+pfic_dma1_ch1_handler:
+	csrrw t6, mscratch, t6
+	STORE ra, 0 * SIZE_REG(t6)
+
+	jal pfic_reg_save
+	jal MC_dma1ch1_handler
+	
+	j return_from_interrupt
+
+pfic_dma1_ch4_handler:
+	csrrw t6, mscratch, t6
+	STORE ra, 0 * SIZE_REG(t6)
+
+	jal pfic_reg_save
+	jal MC_dma1ch4_handler
+	
+	j return_from_interrupt
+
 pfic_adc1_2_handler:
 	j irq_default_handler
+	
 
 irq_default_handler:
     j irq_default_handler

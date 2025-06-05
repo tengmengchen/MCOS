@@ -4,21 +4,23 @@
 #include "os.h"
 
 #define DMA1_CHANNEL_ADC1      1
+#define DMA1_CHANNEL_USART1_TX 4
 #define DMA1_CHANNEL_USART1_RX 5
 
 #define DMA1_BASE             0x40020000
 #define DMA2_BASE             0x40020400
 
+
 #define DMA_CFGR_MEM2MEM_MASK 0xFFFFBFFF
 #define DMA_CFGR_MEM2MEM_ON   0x00004000
 #define DMA_CFGR_MEM2MEM_OFF  0x00000000
 
-#define DMA_CFGR_MSIZE_MASE   0xFFFFF3FF
+#define DMA_CFGR_MSIZE_MASK   0xFFFFF3FF
 #define DMA_CFGR_MSIZE_8BIT   0x00000000
 #define DMA_CFGR_MSIZE_16BIT  0x00000400
 #define DMA_CFGR_MSIZE_32BIT  0x00000800
 
-#define DMA_CFGR_PSIZE_MASE   0xFFFFFCFF
+#define DMA_CFGR_PSIZE_MASK   0xFFFFFCFF
 #define DMA_CFGR_PSIZE_8BIT   0x00000000
 #define DMA_CFGR_PSIZE_16BIT  0x00000100
 #define DMA_CFGR_PSIZE_32BIT  0x00000200
@@ -39,9 +41,25 @@
 #define DMA_CFGR_DIR_DEVICE   0x00000000 // 从外设读
 #define DMA_CFGR_DIR_MEM      0x00000010 // 从存储器读
 
-#define DMA_CFGR_EN_MASE      0xFFFFFFFE
+#define DMA_CFGR_TEIE_MASK    0xFFFFFFF7
+#define DMA_CFGR_TEIE_ON      0x00000008
+#define DMA_CFGR_TEIE_OFF     0x00000000
+
+#define DMA_CFGR_HTIE_MASK    0xFFFFFFFB
+#define DMA_CFGR_HTIE_ON      0x00000004
+#define DMA_CFGR_HTIE_OFF     0x00000000
+
+#define DMA_CFGR_TCIE_MASK    0xFFFFFFFD
+#define DMA_CFGR_TCIE_ON      0x00000002
+#define DMA_CFGR_TCIE_OFF     0x00000000
+
+#define DMA_CFGR_EN_MASk      0xFFFFFFFE
 #define DMA_CFGR_EN_ON        0x00000001
 #define DMA_CFGR_EN_OFF       0x00000000
+
+
+#define DMA_CHANGE_CONFIG_MADDR 0x0001
+#define DMA_CHANGE_CONFIG_CNTR  0x0002
 
 typedef struct {
     __IO uint32_t CFGR;
@@ -79,5 +97,6 @@ typedef struct{
 
 uint8_t MC_dma_init(DMA_InitTypedef dma_initType);
 void MC_dma_start(DMA_InitTypedef dma_initTypedef);
-
+void MC_dma_start_by_channel(uint8_t dma_x, uint8_t channel);
+void MC_dma_change_config(uint8_t dma_x, uint8_t channel, uint8_t option, void *arg);
 #endif

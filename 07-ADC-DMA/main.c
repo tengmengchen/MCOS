@@ -8,11 +8,32 @@ MC_thread_t thread3;
 
 MC_spinlock_t lock;
 
-uint16_t ADC1_Data[1005];
+uint16_t ADC1_Data[1005] = {1};
+
+void DMA1_CH1_HT_Handler();
+
 void thread1_entry()
 {
     uint8_t ret;
     printf("test_thread1_start!\r\n");
+
+    DMA_InitTypedef uart_dma_initTypedef = {
+        .MSIZE = 1,
+        .PSIZE = 1,
+        .MINC  = 1,
+        .PINC  = 0,
+        .CIRC  = 0,
+        .DIR   = 1,
+        .DMA_X = 1,
+        .DMA_Channel = DMA1_CHANNEL_USART1_TX,
+        .TCIE  = 1,
+        .CNTR  = 500,
+        .PADDR = (uint32_t *)0x40013804, // USART1数据寄存器
+        .MADDR = ADC1_Data
+    }; 
+    MC_dma_init(uart_dma_initTypedef);
+    USART1_Enable_DMAT();
+    MC_dma_start(uart_dma_initTypedef);
 
     DMA_InitTypedef dma_initTypedef = {
         .MSIZE = 1,
@@ -22,6 +43,7 @@ void thread1_entry()
         .CIRC  = 1,
         .DIR   = 0,
         .DMA_X = 1,
+        .HTIE  = 1,
         .DMA_Channel = DMA1_CHANNEL_ADC1,
         .CNTR  = 1000,
         .PADDR = (uint32_t *)0x4001244C, // ADC1规则数据寄存器地址
@@ -85,4 +107,41 @@ int main()
         }
     }
     return 0;
+}
+
+void DMA1_CH1_HT_Handler()
+{
+    static uint16_t *MADDR = ADC1_Data, flag = 0;
+    // MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_MADDR, &MADDR);
+    MC_dma_start_by_channel(1, 4);
+    // flag = (flag + 1) % 2;
+    // MADDR = ADC1_Data;
+    // if(flag)
+    // {
+    //     MADDR += 500;
+    // }
+}
+
+void DMA1_CH4_HT_Handler()
+{
+    static uint16_t *MADDR = ADC1_Data, flag = 0;
+    // uart_dma_initTypedef.MADDR = MADDR;
+    // MC_dma_init(uart_dma_initTypedef);
+    // MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_MADDR, &MADDR);
+    MC_dma_start_by_channel(1, 4);
+    // flag = (flag + 1) % 2;
+    // MADDR = ADC1_Data;
+    // if(flag)
+    // {
+    //     MADDR += 500;
+    // }
+}
+
+void DMA1_CH4_TC_Handler()
+{
+    static uint16_t *MADDR = ADC1_Data, flag = 0, cntr = 500;
+    MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_CNTR, &cntr);
+    MC_dma_change_config(1, 4, DMA_CHANGE_CONFIG_MADDR, &MADDR);
+    MC_dma_start_by_channel(1, 4);
+    return;
 }
