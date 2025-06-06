@@ -98,5 +98,5 @@ typedef struct{
 uint8_t MC_dma_init(DMA_InitTypedef dma_initType);
 void MC_dma_start(DMA_InitTypedef dma_initTypedef);
 void MC_dma_start_by_channel(uint8_t dma_x, uint8_t channel);
-void MC_dma_change_config(uint8_t dma_x, uint8_t channel, uint8_t option, void *arg);
+void MC_dma_change_config_by_channel(uint8_t dma_x, uint8_t channel, uint8_t option, void *arg);
 #endif

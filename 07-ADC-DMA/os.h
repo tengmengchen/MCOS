@@ -179,6 +179,8 @@ void MC_pfic_interupt_enable(uint8_t irqn);
 #define MC_IPC_FLAG_PRIO 0  //优先级高的先响应
 #define MC_IPC_FLAG_FIFO 1  //先挂起的先响应
 
+#define MC_SEM_WAIT_FOREVER 0xFFFFFFFF // 永久等待
+
 #define MC_IPC_SEM_MAXVALUE 65535
 
 struct MC_spinlock{

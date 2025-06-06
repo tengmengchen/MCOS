@@ -224,7 +224,7 @@ void MC_dma_start_by_channel(uint8_t dma_x, uint8_t channel)
     dma_channel->CFGR |= DMA_CFGR_EN_ON;
 }
 
-void MC_dma_change_config(uint8_t dma_x, uint8_t channel, uint8_t option, void *arg)
+void MC_dma_change_config_by_channel(uint8_t dma_x, uint8_t channel, uint8_t option, void *arg)
 {
     MC_dma *dma;
     DMA_Channel_InitTypedef *dma_channel;
@@ -251,6 +251,24 @@ void MC_dma_change_config(uint8_t dma_x, uint8_t channel, uint8_t option, void *
     default:
         break;
     }
+}
+
+uint32_t MC_dma_get_MADDR_by_channel(uint8_t dma_x, uint8_t channel)
+{
+    MC_dma *dma;
+    DMA_Channel_InitTypedef *dma_channel;
+    channel --;
+    if(dma_x == 1)
+    {
+        dma = (MC_dma *)DMA1_BASE;
+    }
+    else if(dma_x == 2)
+    {
+        dma = (MC_dma *)DMA2_BASE;
+    }
+    dma_channel = &dma->dma_channel[channel];
+
+    return dma_channel->MADDR;
 }
 
 // DMA1 CH1 传输过半中断处理程序

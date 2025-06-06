@@ -54,7 +54,7 @@ uint8_t MC_sem_delete(MC_sem_t sem)
 static uint8_t _MC_sem_take(MC_sem_t sem, uint32_t timeout)
 {
     MC_thread_t thread;
-
+    uint8_t wait_flag = 1;
 START:
     MC_scheduler_stop(); //关闭调度器,保证临界区的原子性
                         //单核，不设置加锁机制
@@ -73,6 +73,12 @@ START:
         }
         else
         {
+            if(wait_flag == 0 && timeout != MC_SEM_WAIT_FOREVER)
+            {
+                MC_scheduler_start();
+                return 1;
+            }
+
             thread = MC_thread_self();
 
             MC_thread_to_suspend_list(thread, &sem, sem->attribute);
@@ -87,6 +93,7 @@ START:
             }
         }
         MC_scheduler_begin();
+        wait_flag = 0;
         //定时器结束后返回至此，要重新判断资源情况。
         goto START;
     }
